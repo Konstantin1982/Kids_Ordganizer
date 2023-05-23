@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="user_types">
+        <item>Ребенок</item>
+        <item>Родитель</item>
+    </string-array>
+
+    <string-array name="tasks_statuses">
+        <item>Создана</item>
+        <item>Готова</item>
+        <item>Отклонена</item>
+        <item>Завершена</item>
+    </string-array>
+</resources>
