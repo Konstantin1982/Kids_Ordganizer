@@ -40,34 +40,16 @@ public class LaunchActivity extends AppCompatActivity {
 /*
 TASKS LINK:
 
-TODO 1: Create activity for child with task list
-
-TODO 2: Create activity for parent with task list
-
+DONE 1: Create activity for child with task list
+DONE 2: Create activity for parent with task list
 TODO 3: Create activity to create a task:
-
 TODO 4: Create activity to work with task on behalf of children:
-
 TODO 5: Create Profile Activity
-
 TODO 6: Create Profile Activity for parent
-
 TODO 6: Create Schedule Activity for parent
-
 TODO 6: Create Statistics
-
 TODO 6: Create Settings
-
 TODO 7: create server-side scripts to get/set entities
-
 TODO 8: Implement server-side changes
-
 TODO 9: Implement initialize for child / parent
-
-
-
-
-
-
-
  */

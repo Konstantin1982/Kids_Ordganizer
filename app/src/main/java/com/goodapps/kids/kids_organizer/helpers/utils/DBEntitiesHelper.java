@@ -18,7 +18,7 @@ public class DBEntitiesHelper {
         switch (type){
             case 0: // assignee
                 return mapsNames(dbManager.getAllAssignee());
-            case 1:
+            case 1: // reporters
                 return mapsNames(dbManager.getAllReporters());
             default:
                 return null;

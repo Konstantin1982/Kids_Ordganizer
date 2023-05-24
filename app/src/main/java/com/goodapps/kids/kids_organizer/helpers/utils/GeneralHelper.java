@@ -2,6 +2,8 @@ package com.goodapps.kids.kids_organizer.helpers.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -51,7 +53,7 @@ public class GeneralHelper {
     }
 
     public static String GetTitleForListOfTasks(int isChild, Calendar filterDate) {
-        String result = "Дела на";
+        String result = "Дела на ";
         LocalDate filter = LocalDate.of(filterDate.get(Calendar.YEAR),
                                         filterDate.get(Calendar.MONTH) + 1,
                                         filterDate.get(Calendar.DAY_OF_MONTH));
@@ -60,19 +62,19 @@ public class GeneralHelper {
         String dateValue = "";
         switch (diff){
             case 0:
-                dateValue = " Сегодня";
+                dateValue = "Сегодня";
                 break;
             case 1:
-                dateValue = " Завтра";
+                dateValue =  "Завтра";
                 break;
             case 2:
-                dateValue = " Послезавтра";
+                dateValue = "Послезавтра";
                 break;
             case -1:
-                dateValue = " Вчера";
+                dateValue = "Вчера";
                 break;
             case -2:
-                dateValue = " Позавчера";
+                dateValue = "Позавчера";
                 break;
             default:
                 dateValue = DateFormat.getDateInstance().format(filterDate.getTime());
@@ -97,5 +99,8 @@ public class GeneralHelper {
         }
     }
 
+    public static Bitmap getBitmapFromBytes(byte[] bytes) {
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    }
 
 }

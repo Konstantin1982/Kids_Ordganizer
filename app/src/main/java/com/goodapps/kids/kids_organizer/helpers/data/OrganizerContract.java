@@ -7,7 +7,6 @@ public class OrganizerContract {
     public static final class TaskEntry implements BaseColumns {
         public static final String TABLE_NAME = "tasks";
         public static final String NAME = "name";
-        public static final String DESCRIPTION = "description";
         public static final String FROMDATE = "from_date";
         public static final String TODATE = "to_date";
         public static final String FROMTIME = "from_time";
@@ -17,6 +16,18 @@ public class OrganizerContract {
         public static final String STATUS = "status";
         public static final String SCORE = "score";
         public static final String PICTURE = "picture";
+        public static final String RESULT_IMAGE = "result_image";
+    }
+
+    public static final class TaskSteps implements BaseColumns {
+        public static final String TABLE_NAME = "task_steps";
+        public static final String TASK_ID = "task_id";
+        public static final String STEP_DESCRIPTION = "name";
+        public static final String STEP_STATUS = "status";
+        public static final String STEP_PICTURE = "picture";
+        public static final String STEP_RESULT_IMAGE = "result_image";
+
+        public static final String STEP_ORDER = "sort_order";
     }
 
     public static final class Schedule implements BaseColumns {

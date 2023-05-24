@@ -66,19 +66,34 @@ public class OrganizerDBManager {
         result = getAnyData(rawQuery);
         Log.e("DB_MANAGER", "Count in tasks = " + result.getCount());
         if (result.getCount() <= 0) {
-            String sql = "INSERT INTO tasks (name, description, from_date, to_date, from_time, to_time, reporter, assignee, status, score, picture) " +
-                    "VALUES (?, ?, date('NOW'), ?, time('NOW'), ?, 0, 1, 0, 0, 0) ";
+            String taskSql = "INSERT INTO tasks (name, from_date, to_date, from_time, to_time, reporter, assignee, status, score, picture) " +
+                    "VALUES (?, date('NOW'), ?, time('NOW'), ?, 0, 1, 0, 0, 0) ";
+            String stepSql = "INSERT INTO task_steps (task_id, name, status, picture, sort_order) " +
+                    " VALUES (?, ?, 0, 0, ?) ";
+
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat timeFormat = new SimpleDateFormat("HH:MM:SS");
 
-            insertAnyData(sql, new String[]{
-                    "Помыть посуду",
-                    "1. Вымыть посуду. 2. Вытереть стол 3. Убрать за собой",
-                    dateFormat.format(new Date()),
-                    timeFormat.format(new Date())
-                }
+            insertAnyData(taskSql, new String[]{
+                            "Помыть посуду",
+                            dateFormat.format(new Date()),
+                            timeFormat.format(new Date())
+                    }
             );
-            insertAnyData(sql, new String[]{"Погулять с собакой", "1. Выгулять собаку. 2.Помыть ей лапы 3. Покормить собаку", dateFormat.format(new Date()), timeFormat.format(new Date())});
+            result = getAnyData("SELECT max(id) as maxId from tasks");
+            result.moveToFirst();
+            Integer task_id =  result.getInt(0);
+            insertAnyData(stepSql, new String[]{String.valueOf(task_id), "Помыть посуду", String.valueOf(0)});
+            insertAnyData(stepSql, new String[]{String.valueOf(task_id), "Вымыть раковину", String.valueOf(1)});
+            insertAnyData(stepSql, new String[]{String.valueOf(task_id), "Повесить полотенчик", String.valueOf(2)});
+
+            insertAnyData(taskSql, new String[]{"Поухаживать за собакой", dateFormat.format(new Date()), timeFormat.format(new Date())});
+            result = getAnyData("SELECT max(id) as maxId from tasks");
+            result.moveToFirst();
+            task_id =  result.getInt(0);
+            insertAnyData(stepSql, new String[]{String.valueOf(task_id), "Выгулять собаку", String.valueOf(0)});
+            insertAnyData(stepSql, new String[]{String.valueOf(task_id), "Помыть ей лапы", String.valueOf(1)});
+            insertAnyData(stepSql, new String[]{String.valueOf(task_id), "Покормить собаку", String.valueOf(2)});
         }
     }
 
@@ -127,12 +142,11 @@ public class OrganizerDBManager {
                 dateFilter = " AND t." + OrganizerContract.TaskEntry.TODATE + " LIKE '" + GeneralHelper.getCurrentDateAsString() + "'";
             }
         } else {
-            idFilter = " AND t." + OrganizerContract.TaskEntry._ID  + " =  " + taskId;
+            idFilter = " AND t." + OrganizerContract.TaskEntry._ID + " =  " + taskId;
         }
         String sql = "Select "
                 + " t." + OrganizerContract.TaskEntry._ID + ", "
                 + " t." + OrganizerContract.TaskEntry.NAME + ", "
-                + " t." + OrganizerContract.TaskEntry.DESCRIPTION + ", "
                 + " t." + OrganizerContract.TaskEntry.FROMDATE + ", "
                 + " t." + OrganizerContract.TaskEntry.TODATE + ", "
                 + " t." + OrganizerContract.TaskEntry.FROMTIME + ", "
@@ -141,14 +155,14 @@ public class OrganizerDBManager {
                 + " p2." + OrganizerContract.Profiles.NAME + " as " + OrganizerContract.TaskEntry.ASSIGNEE + ", "
                 + " t." + OrganizerContract.TaskEntry.STATUS + ", "
                 + " t." + OrganizerContract.TaskEntry.SCORE + ", "
-                + " t." + OrganizerContract.TaskEntry.PICTURE +
+                + " t." + OrganizerContract.TaskEntry.PICTURE + ", "
+                + " t." + OrganizerContract.TaskEntry.RESULT_IMAGE +
                 " from " + OrganizerContract.TaskEntry.TABLE_NAME + " t " +
                 " LEFT OUTER  JOIN " + OrganizerContract.Profiles.TABLE_NAME +
                 " p1 ON t." + OrganizerContract.TaskEntry.REPORTER + " = p1." + OrganizerContract.Profiles.NAME +
                 " LEFT OUTER  JOIN " + OrganizerContract.Profiles.TABLE_NAME +
                 " p2 ON t." + OrganizerContract.TaskEntry.ASSIGNEE + " = p2." + OrganizerContract.Profiles.NAME +
-                " WHERE 1 = 1 " + completedFilter  + dateFilter + idFilter + " ;"
-                ;
+                " WHERE 1 = 1 " + completedFilter + dateFilter + idFilter + " ;";
         Log.e("Get list of task", sql);
         tasksFromDb = getAnyData(sql);
 
@@ -156,31 +170,42 @@ public class OrganizerDBManager {
     }
 
     public HashMap<String, String> getTaskById(Integer taskId) throws ParseException {
-        ArrayList<HashMap<String, String>> tasks = getTasks(0, "", taskId);
+        ArrayList<HashMap<String, String>> tasks = getTasks(1, "", taskId);
         if (tasks.size() > 0)
             return tasks.get(0);
         else
             return null;
     }
 
-    public ArrayList<HashMap<String, String>> getAllAssignee(){
+    public ArrayList<HashMap<String, String>> getTaskSteps(Integer taskId) {
+        String sql = "Select "
+                + " ts." + OrganizerContract.TaskSteps._ID + ", "
+                + " ts." + OrganizerContract.TaskSteps.TASK_ID + ", "
+                + " ts." + OrganizerContract.TaskSteps.STEP_DESCRIPTION + ", "
+                + " ts." + OrganizerContract.TaskSteps.STEP_STATUS + ", "
+                + " ts." + OrganizerContract.TaskSteps.STEP_PICTURE + ", "
+                + " ts." + OrganizerContract.TaskSteps.STEP_RESULT_IMAGE +
+                " from " + OrganizerContract.TaskSteps.TABLE_NAME + " ts " +
+                " WHERE " + OrganizerContract.TaskSteps.TASK_ID + " = " + taskId + ";";
+        return getMapsFromCursor(getAnyData(sql));
+    }
+
+    public ArrayList<HashMap<String, String>> getAllAssignee() {
         Cursor usersFromDB;
         String sql = "SELECT " + OrganizerContract.Profiles._ID + ", "
-                     + OrganizerContract.Profiles.NAME + " FROM "
-                     + OrganizerContract.Profiles.TABLE_NAME + " WHERE "
-                     + OrganizerContract.Profiles.TYPE + " = 0 "
-        ;
+                + OrganizerContract.Profiles.NAME + " FROM "
+                + OrganizerContract.Profiles.TABLE_NAME + " WHERE "
+                + OrganizerContract.Profiles.TYPE + " = 0 ";
         usersFromDB = getAnyData(sql);
         return getMapsFromCursor(usersFromDB);
     }
 
-    public ArrayList<HashMap<String, String>> getAllReporters(){
+    public ArrayList<HashMap<String, String>> getAllReporters() {
         Cursor usersFromDB;
         String sql = "SELECT " + OrganizerContract.Profiles._ID + ", "
-                     + OrganizerContract.Profiles.NAME + " FROM "
-                     + OrganizerContract.Profiles.TABLE_NAME + " WHERE "
-                     + OrganizerContract.Profiles.TYPE + " = 0 "
-        ;
+                + OrganizerContract.Profiles.NAME + " FROM "
+                + OrganizerContract.Profiles.TABLE_NAME + " WHERE "
+                + OrganizerContract.Profiles.TYPE + " = 0 ";
         usersFromDB = getAnyData(sql);
         return getMapsFromCursor(usersFromDB);
     }

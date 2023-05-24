@@ -3,10 +3,11 @@ package com.goodapps.kids.kids_organizer.helpers.data;
 
 import android.graphics.Bitmap;
 
+import java.util.ArrayList;
+
 public class OrganizerTask {
     public Integer id;
     public String name;
-    public String description;
     public String fromDate;
     public String toDate;
     public String fromTime;
@@ -15,9 +16,13 @@ public class OrganizerTask {
     public String assignee;
     public String status;
     public Integer score;
-    public Bitmap picture;
+    public Integer picture;
+    public Bitmap resultImage;
+    public ArrayList<OrganizerTaskStep> steps;
 
     public OrganizerTask() {
-        return ;
+        return;
     }
+
 }
+

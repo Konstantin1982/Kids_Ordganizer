@@ -32,8 +32,7 @@ public class OrganizerDBHelper extends SQLiteOpenHelper {
                 "CREATE TABLE " +
                         OrganizerContract.TaskEntry.TABLE_NAME + "(" +
                         OrganizerContract.TaskEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        OrganizerContract.TaskEntry.NAME + " VARCHAR(255), " +
-                        OrganizerContract.TaskEntry.DESCRIPTION + " TEXT, " +
+                        OrganizerContract.TaskEntry.NAME + " TEXT, " +
                         OrganizerContract.TaskEntry.FROMDATE + " TEXT, " +
                         OrganizerContract.TaskEntry.TODATE + " TEXT, " +
                         OrganizerContract.TaskEntry.FROMTIME + " TEXT, " +
@@ -43,6 +42,17 @@ public class OrganizerDBHelper extends SQLiteOpenHelper {
                         OrganizerContract.TaskEntry.STATUS + " INTEGER, " +
                         OrganizerContract.TaskEntry.SCORE + " INTEGER, " +
                         OrganizerContract.TaskEntry.PICTURE + " INTEGER " +
+                        ")";
+        final String SQL_CREATE_TASK_STEP_TABLE =
+                "CREATE TABLE " +
+                        OrganizerContract.TaskSteps.TABLE_NAME + "(" +
+                        OrganizerContract.TaskSteps._ID  + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        OrganizerContract.TaskSteps.TASK_ID + " INTEGER, " +
+                        OrganizerContract.TaskSteps.STEP_DESCRIPTION + " TEXT, " +
+                        OrganizerContract.TaskSteps.STEP_STATUS + " INTEGER, " +
+                        OrganizerContract.TaskSteps.STEP_PICTURE + " INTEGER, " +
+                        OrganizerContract.TaskSteps.STEP_ORDER + " INTEGER, " +
+                        OrganizerContract.TaskSteps.STEP_RESULT_IMAGE + " VARCHAR(255) " +
                         ")";
 
         final String SQL_CREATE_SCHEDULE_TABLE =
@@ -114,6 +124,7 @@ public class OrganizerDBHelper extends SQLiteOpenHelper {
                         ")";
 
         sqLiteDatabase.execSQL(SQL_CREATE_TASK_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_TASK_STEP_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_SCHEDULE_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_COMMENTS_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_REACTIONS_TABLE);
